@@ -1,0 +1,106 @@
+Team members:
+Delic Faris
+Herenda Ajla
+
+Files in submission:
+emoji (exe)
+emoji.c
+README
+shell (exe)
+shell.c
+
+
+Q1: The following actions, do they require the OS to use kernel mode or user mode is sufficient? Explain.
+● Starting a new process.
+● Multiplying two floating numbers stored in an application’s memory.
+● Writing the results of the multiplication to a temporary log file on disk.
+
+1. Starting a new process, is supported by the two phases of the LDE, in which both of the modes participate.
+The kernel initialises the trap tables, uses specialised HW instructions and then uses a return-from-trap function to go to the
+user mode actually start the process.
+
+2. Since, from user mode access to memory is limited to only some memory locations, and access to peripheral devices is denied,
+multiplication of two floating numbers depends of wether the user mode is capable of retrieving these values from memory and if it
+is not we would have to switch to kernel mode. So, no user mode is not sufficient.
+
+3. As we have previously stated user mode is incapable of accessing hardware, accessing/referencing memory and its processes can not
+issue I/O requests to the disk, so creating any type of change to the memory is seen as privileged and out of the user mode scope. 
+Meaning that kernel mode is required.
+
+
+
+Q2: Explain the purpose of a system call. Describe how control passes to the kernel when executing a system call.
+
+The main goal of a system call is being able to get called by a user process in situations where that user process is wishing
+to perform some kind of privileged operation. When called system calls, allow the kernel to carefully expose key pieces of
+functionality to user programs, like accessing the file system, creating and destroying processes, communicating with other
+processes and etc.
+The protected control transfer is supported by instructions like trap into the kernel and return-from-trap to the user
+mode and specialised HW instructions, which are used by the OS to let the HW know about the location of trap tables in
+memory.
+During this transfer of control and execution of system calls the following happens:
+-jump into the kernel (with trap)
+-run kernel code as designated by trap table
+-return from trap
+-raise/lower privileges
+-save/restore registers
+
+Outline of our assignment strategy:
+We aimed to implement the concept of a shell by following the order in which the tasks were listed, by first focusing on the basic level and ensuring
+that it is functional by every inch and then attempt the execution of higher level tasks.
+The result is a shell, which continuously requires input till we write the command exit and offers commands ls, mkdir, uptime and sl for use.
+
+All commands appear in the code in form of shell_command() function
+
+ls
+-it lists the contents of a directory Ex. ls Tony
+-it lists the contents of a directory in colour Ex. ls --color=always Tony
+-it list a short manual for its use Ex. ls --help
+-it redirects the output to a .txt file Ex. ls Tony > os.txt
+
+mkdir
+-it creates a directory  Ex. mkdir Faris
+-actually as many as we want at the same time Ex. mkdir Ajla Faris OS
+
+uptime
+-provides the date, current time and time that the device has been up for Ex. uptime
+-if we only want the date and time Ex. uptime -s
+-if we want the number of days it has been up Ex uptime -p
+
+sl
+-a joke command, which we could not implement due to the x84_64 architecture on our devices,
+so we print a smiley face
+-here we implement the use of execv(), fork(), wait() and waitpid() syscalls
+-Disclaimer: for this we have 2 versions
+             1st one is uncommented and is used when you run this code the way it is set up
+             2nd one is commented and by uncommenting it, commenting the emoji FUNCTION and previous(1st)
+             implementation of shell_ls() can be seen in function only when we run from terminal the shell exe file
+             in form of ./shell
+
+
+Our overview on the project tasks specifying our challenges:
+
+Task 1.1 The shell
+Retrieval of the machine name was a challenge, since the name showing up in out terminal was not not matching the
+"machine name" printed in our DIY shell.
+
+
+Task 1.2 Shell commands
+The uptime could not be implemented properly due to the lacking library for our OS, which could provide us with
+all the needed information.
+
+
+Task 1.3 Implementation of syscalls:
+Since we had already implemented fork() in the structure of our shell it was crossed of the list immediately and a place for wait was found easy too, but
+for the implementation of exec() we had to find a suiting syscall from the family and have chosen execv(), which we have implemented in one of the versions
+of the shell_sl() function;
+Finding a place for exec() to make sense was already challenging so we decided to skip the intermediate and advanced level of this particular task,
+especially seeing that forkbomb() includes denial of service, which sounds too intimidating for us to involve in a project we have spent so much effort on.
+
+Task 1.4 Add some colour to your shell and name it
+The most satisfaction bringing part.
+
+Task 1.5
+//
+
+Credit goes to all the people who have in the past dealt with similar projects, tasks and obstacles, thanks to who we were able to implement this and learn.
